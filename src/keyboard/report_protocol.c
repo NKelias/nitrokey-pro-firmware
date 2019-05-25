@@ -36,6 +36,8 @@
 #include "CcidLocalAccess.h"
 #include "time.h"
 #include "password_safe.h"
+#include "FlashStorage.h"
+
 
 #include "stm32f10x_bkp.h"
 #include "stm32f10x_pwr.h"
@@ -234,9 +236,6 @@ uint8_t parse_report(uint8_t * const report, uint8_t * const output) {
 
       case CMD_LOCK_DEVICE:
         cmd_lockDevice(report, output);
-
-        /* TODO: Add extra command for this*/
-        cmd_enableFirmwareUpdate();
         break;
 
       case CMD_DETECT_SC_AES:
@@ -245,6 +244,14 @@ uint8_t parse_report(uint8_t * const report, uint8_t * const output) {
 
       case CMD_NEW_AES_KEY:
         cmd_newAesKey(report, output);
+        break;
+
+      case CMD_FIRMWARE_UPDATE:
+        cmd_enableFirmwareUpdate(report, output);
+        break;
+
+      case CMD_CHANGE_FIRMWARE_PASSWORD:
+        cmd_changeFirmwarePassword(report, output);
         break;
 
 #ifdef ADD_DEBUG_COMMANDS
@@ -961,7 +968,15 @@ uint8_t cmd_lockDevice(uint8_t *report, uint8_t *output) {
   return 0;
 }
 
-uint8_t cmd_enableFirmwareUpdate() {
+uint8_t cmd_enableFirmwareUpdate(uint8_t *report, uint8_t *output) {
+    
+    uint8_t ret = CheckUpdatePin (&report[1], strlen ((char*)&report[1]));
+    if (FALSE == ret) {
+        output[OUTPUT_CMD_STATUS_OFFSET] = CMD_STATUS_WRONG_PASSWORD;
+        return 0;
+    }
+
+    // TODO: This could be done through persistent memory as well...
     /* Boot loader magic number*/
     const uint32_t CMD_BOOT = 0x544F4F42UL;
 
@@ -972,6 +987,44 @@ uint8_t cmd_enableFirmwareUpdate() {
     BKP_WriteBackupRegister(BKP_DR2, (uint16_t) ((CMD_BOOT & 0xFFFF0000UL) >> 16));
 
     NVIC_SystemReset();
+
+    return 0;
+}
+
+uint8_t cmd_changeFirmwarePassword(uint8_t *report, uint8_t *output) {
+
+    const uint8_t MAX_PASSWORD_LEN = 20;
+
+    /* FIXME: Dont use strlen*/
+    uint8_t len = strlen ((char*)&report[1]);
+    if(len > MAX_PASSWORD_LEN) {
+        len = MAX_PASSWORD_LEN;
+    }
+
+    if (TRUE == CheckUpdatePin (&report[1], len))
+    {
+        /* FIXME: Dont use strlen*/
+        len = strlen ((char*)&report[22]);
+        if(len > MAX_PASSWORD_LEN) {
+            len = MAX_PASSWORD_LEN;
+        }
+
+        if (TRUE == StoreNewUpdatePinHashInFlash (&report[22], len))    // Start of new PW
+        {
+            /* PIN change sucessful*/
+            output[OUTPUT_CMD_STATUS_OFFSET] = CMD_STATUS_OK;
+        }
+        else
+        {
+            /* Incorrect Password Length*/
+            output[OUTPUT_CMD_STATUS_OFFSET] = CMD_STATUS_WRONG_PASSWORD;
+        }
+    }
+    else
+    {
+        /* Incorrect password*/
+        output[OUTPUT_CMD_STATUS_OFFSET] = CMD_STATUS_WRONG_PASSWORD;
+    }
 
     return 0;
 }
