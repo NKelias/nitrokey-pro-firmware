@@ -970,7 +970,7 @@ uint8_t cmd_lockDevice(uint8_t *report, uint8_t *output) {
 
 uint8_t cmd_enableFirmwareUpdate(uint8_t *report, uint8_t *output) {
     
-    uint8_t ret = CheckUpdatePin (&report[1], strlen ((char*)&report[1]));
+    uint8_t ret = CheckUpdatePin (&report[1]);
     if (FALSE == ret) {
         output[OUTPUT_CMD_STATUS_OFFSET] = CMD_STATUS_WRONG_PASSWORD;
         return 0;
@@ -993,30 +993,16 @@ uint8_t cmd_enableFirmwareUpdate(uint8_t *report, uint8_t *output) {
 
 uint8_t cmd_changeFirmwarePassword(uint8_t *report, uint8_t *output) {
 
-    const uint8_t MAX_PASSWORD_LEN = 20;
-
-    /* FIXME: Dont use strlen*/
-    uint8_t len = strlen ((char*)&report[1]);
-    if(len > MAX_PASSWORD_LEN) {
-        len = MAX_PASSWORD_LEN;
-    }
-
-    if (TRUE == CheckUpdatePin (&report[1], len))
+    if (TRUE == CheckUpdatePin (&report[1]))
     {
-        /* FIXME: Dont use strlen*/
-        len = strlen ((char*)&report[22]);
-        if(len > MAX_PASSWORD_LEN) {
-            len = MAX_PASSWORD_LEN;
-        }
-
-        if (TRUE == StoreNewUpdatePinHashInFlash (&report[22], len))    // Start of new PW
+        if (TRUE == StoreNewUpdatePinHashInFlash (&report[21]))    // Start of new PW
         {
             /* PIN change sucessful*/
             output[OUTPUT_CMD_STATUS_OFFSET] = CMD_STATUS_OK;
         }
         else
         {
-            /* Incorrect Password Length*/
+            /* Password too short*/
             output[OUTPUT_CMD_STATUS_OFFSET] = CMD_STATUS_WRONG_PASSWORD;
         }
     }

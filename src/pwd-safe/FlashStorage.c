@@ -262,7 +262,7 @@ u8 InitStickConfigurationToUserPage_u8 (void)
 
     WriteStickConfigurationToUserPage ();
 
-    StoreNewUpdatePinHashInFlash ((u8 *) "12345678", 8);
+    InitializeUpdatePinHashInFlash();
 
     return (TRUE);
 }
@@ -588,7 +588,7 @@ u8 ReadUpdatePinSaltFromFlash (u8 * PIN_pu8)
 
 *******************************************************************************/
 
-u8 CheckUpdatePin (u8 * Password_pu8, u32 PasswordLen_u32)
+u8 CheckUpdatePin (u8 * Password_pu8)
 {
     u8 i;
     u8 UpdateSaltInit;
@@ -596,20 +596,7 @@ u8 CheckUpdatePin (u8 * Password_pu8, u32 PasswordLen_u32)
     u8 UpdatePinSalt_u8[UPDATE_PIN_SALT_SIZE];
     u8 UpdatePinHash_u8[AES_KEYSIZE_256_BIT];
 
-    const u8 PASSWORD_LEN = 20;
-    const u8 MIN_PASSWORD_LEN = 8;
-
     ReadUpdatePinSaltFromFlash (UpdatePinSalt_u8);
-
-    // Count trailing zeroes to check if password is >= 8 characters
-    for (u8 i = PASSWORD_LEN -1 ; i >= 0; i--) {
-        if (i < MIN_PASSWORD_LEN) {
-            return (FALSE);
-        }
-        if (Password_pu8[i] != 0) {
-            break;
-        } 
-    }
 
     // Check if PIN is uninitialized after flashing
     UpdateSaltInit = FALSE;
@@ -623,17 +610,11 @@ u8 CheckUpdatePin (u8 * Password_pu8, u32 PasswordLen_u32)
 
     if (FALSE == UpdateSaltInit)
     {
-        // Initialize Update Pin with default value
-        StoreNewUpdatePinHashInFlash ((u8 *) "12345678", 8);
+        InitializeUpdatePinHashInFlash();
         ReadUpdatePinSaltFromFlash (UpdatePinSalt_u8);
     }
 
-    if (UPDATE_PIN_MAX_SIZE < PasswordLen_u32)
-    {
-        return (FALSE);
-    }
-
-    pbkdf2 (output_au8, Password_pu8, PASSWORD_LEN, UpdatePinSalt_u8, UPDATE_PIN_SALT_SIZE);
+    pbkdf2 (output_au8, Password_pu8, UPDATE_PIN_MAX_SIZE, UpdatePinSalt_u8, UPDATE_PIN_SALT_SIZE);
     ReadUpdatePinHashFromFlash (UpdatePinHash_u8);
 
     if (0 != memcmp (UpdatePinHash_u8, output_au8, AES_KEYSIZE_256_BIT))
@@ -644,6 +625,32 @@ u8 CheckUpdatePin (u8 * Password_pu8, u32 PasswordLen_u32)
     /* TODO: Clear PBKDF output*/
     DelayMs (100);
     return (TRUE);
+}
+
+/*******************************************************************************
+
+  InitializeUpdatePinHashInFlash
+
+  Initializes PIN to default value after Flash erase
+
+  Changes
+  Date      Author          Info
+  17.05.19  ET              Merge over from NK Storage
+
+  Reviews
+  Date      Reviewer        Info
+
+*******************************************************************************/
+
+u8 InitializeUpdatePinHashInFlash ()
+{
+        u8 input_au8[UPDATE_PIN_MAX_SIZE];
+        memset(input_au8, 0, UPDATE_PIN_MAX_SIZE);
+
+        // Initialize Update Pin with default value
+        strncpy((char*) input_au8, "12345678", UPDATE_PIN_MAX_SIZE);
+        StoreNewUpdatePinHashInFlash (input_au8);
+        return (TRUE);
 }
 
 /*******************************************************************************
@@ -661,14 +668,20 @@ u8 CheckUpdatePin (u8 * Password_pu8, u32 PasswordLen_u32)
 
 *******************************************************************************/
 
-u8 StoreNewUpdatePinHashInFlash (u8 * Password_pu8, u32 PasswordLen_u32)
+u8 StoreNewUpdatePinHashInFlash (u8 * Password_pu8)
 {
     u8 output_au8[64];
     u8 UpdatePinSalt_u8[UPDATE_PIN_SALT_SIZE];
+    const u8 MIN_PASSWORD_LEN = 8;
 
-    if (UPDATE_PIN_MAX_SIZE < PasswordLen_u32)
-    {
-        return (FALSE);
+    // Count trailing zeroes to check if password is >= 8 characters
+   for (u8 i = UPDATE_PIN_MAX_SIZE -1 ; i >= 0; i--) {
+        if (i < MIN_PASSWORD_LEN - 1) {
+            return (FALSE);
+        }
+        if (Password_pu8[i] != 0) {
+            break;
+        }
     }
 
     // Generate new salt
@@ -676,7 +689,7 @@ u8 StoreNewUpdatePinHashInFlash (u8 * Password_pu8, u32 PasswordLen_u32)
 
     WriteUpdatePinSaltToFlash (UpdatePinSalt_u8);
 
-    pbkdf2 (output_au8, Password_pu8, PasswordLen_u32, UpdatePinSalt_u8, UPDATE_PIN_SALT_SIZE);
+    pbkdf2 (output_au8, Password_pu8, UPDATE_PIN_MAX_SIZE, UpdatePinSalt_u8, UPDATE_PIN_SALT_SIZE);
     WriteUpdatePinHashToFlash (output_au8);
 
     return (TRUE);

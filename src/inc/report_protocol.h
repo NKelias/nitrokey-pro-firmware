@@ -50,6 +50,7 @@
 #define CMD_CHANGE_FIRMWARE_PASSWORD        0x1A
 
 
+
 #define CMD_GET_PW_SAFE_SLOT_STATUS       0x60
 #define CMD_GET_PW_SAFE_SLOT_NAME         0x61
 #define CMD_GET_PW_SAFE_SLOT_PASSWORD     0x62
