@@ -69,7 +69,7 @@ unsigned int debug_len = 0;
 
 #ifdef ADD_DEBUG_COMMANDS
 
-void WriteDebug (u8 * data, unsigned int length)
+void WriteDebug (uint8_t * data, unsigned int length)
 {
     unsigned char page_buffer[FLASH_PAGE_SIZE];
 
@@ -85,7 +85,7 @@ void WriteDebug (u8 * data, unsigned int length)
 }
 
 
-void GetDebug (u8 * data, unsigned int* length)
+void GetDebug (uint8_t * data, unsigned int* length)
 {
     unsigned char page_buffer[FLASH_PAGE_SIZE];
 
@@ -111,7 +111,7 @@ void GetDebug (u8 * data, unsigned int* length)
 
 *******************************************************************************/
 
-u8 WriteAESStorageKeyToUserPage (u8 * data)
+uint8_t WriteAESStorageKeyToUserPage (uint8_t * data)
 {
     // flashc_memcpy(FLASHC_USER_PAGE,data,32,TRUE);
 unsigned char page_buffer[FLASH_PAGE_SIZE];
@@ -137,7 +137,7 @@ unsigned char page_buffer[FLASH_PAGE_SIZE];
 
 *******************************************************************************/
 
-u8 ReadAESStorageKeyToUserPage (u8 * data)
+uint8_t ReadAESStorageKeyToUserPage (uint8_t * data)
 {
     memcpy (data, (void *) (FLASHC_USER_PAGE), 32);
     return (TRUE);
@@ -157,7 +157,7 @@ u8 ReadAESStorageKeyToUserPage (u8 * data)
 
 *******************************************************************************/
 
-u8 WriteStickConfigurationToUserPage (void)
+uint8_t WriteStickConfigurationToUserPage (void)
 {
     // Set actual firmware version
     // StickConfiguration_st.VersionInfo_au8[0] = VERSION_MAJOR;
@@ -170,7 +170,7 @@ u8 WriteStickConfigurationToUserPage (void)
 uint8_t page_buffer[FLASH_PAGE_SIZE];
 
     memcpy (page_buffer, (const void *) FLASHC_USER_PAGE, FLASH_PAGE_SIZE);
-    memcpy (page_buffer + 72, (u8 *) & StickConfiguration_st, 28);
+    memcpy (page_buffer + 72, (uint8_t *) & StickConfiguration_st, 28);
 
     FLASH_Unlock ();
     FLASH_ErasePage (FLASHC_USER_PAGE);
@@ -194,13 +194,13 @@ uint8_t page_buffer[FLASH_PAGE_SIZE];
 
 *******************************************************************************/
 
-u8 ReadStickConfigurationFromUserPage (void)
+uint8_t ReadStickConfigurationFromUserPage (void)
 {
-u8 UserPwRetryCount;
+uint8_t UserPwRetryCount;
 
-u8 AdminPwRetryCount;
+uint8_t AdminPwRetryCount;
 
-u32 ActiveSmartCardID_u32;
+uint32_t ActiveSmartCardID_u32;
 
     // Save dynamic data
     UserPwRetryCount = StickConfiguration_st.UserPwRetryCount;
@@ -241,7 +241,7 @@ u32 ActiveSmartCardID_u32;
 
 *******************************************************************************/
 
-u8 InitStickConfigurationToUserPage_u8 (void)
+uint8_t InitStickConfigurationToUserPage_u8 (void)
 {
     StickConfiguration_st.MagicNumber_StickConfig_u16 = MAGIC_NUMBER_STICK20_CONFIG;
     StickConfiguration_st.ReadWriteFlagUncryptedVolume_u8 = READ_WRITE_ACTIVE;
@@ -283,7 +283,7 @@ u8 InitStickConfigurationToUserPage_u8 (void)
 
 *******************************************************************************/
 #ifdef STORAGE
-u8 SetSdCardNotFilledWithRandomCharsToFlash (void)
+uint8_t SetSdCardNotFilledWithRandomCharsToFlash (void)
 {
     // If configuration not found then init it
     if (FALSE == ReadStickConfigurationFromUserPage ())
@@ -318,7 +318,7 @@ u8 SetSdCardNotFilledWithRandomCharsToFlash (void)
 
 *******************************************************************************/
 
-u8 SetStickKeysNotInitatedToFlash (void)
+uint8_t SetStickKeysNotInitatedToFlash (void)
 {
     // If configuration not found then init it
     if (FALSE == ReadStickConfigurationFromUserPage ())
@@ -349,7 +349,7 @@ u8 SetStickKeysNotInitatedToFlash (void)
 *******************************************************************************/
 #ifdef STORAGE
 
-u8 ClearStickKeysNotInitatedToFlash (void)
+uint8_tClearStickKeysNotInitatedToFlash (void)
 {
     // If configuration not found then init it
     if (FALSE == ReadStickConfigurationFromUserPage ())
@@ -380,7 +380,7 @@ u8 ClearStickKeysNotInitatedToFlash (void)
 
 *******************************************************************************/
 
-u8 WriteXorPatternToFlash (u8 * XorPattern_pu8)
+uint8_t WriteXorPatternToFlash (uint8_t* XorPattern_pu8)
 {
     // flashc_memcpy(FLASHC_USER_PAGE + 146,XorPattern_pu8,32,TRUE);
 unsigned char page_buffer[FLASH_PAGE_SIZE];
@@ -409,7 +409,7 @@ unsigned char page_buffer[FLASH_PAGE_SIZE];
 
 *******************************************************************************/
 
-u8 ReadXorPatternFromFlash (u8 * XorPattern_pu8)
+uint8_t ReadXorPatternFromFlash (uint8_t* XorPattern_pu8)
 {
     memcpy (XorPattern_pu8, (void *) (FLASHC_USER_PAGE + 146), 32);
 
@@ -435,7 +435,7 @@ u8 ReadXorPatternFromFlash (u8 * XorPattern_pu8)
 
 *******************************************************************************/
 
-u8 WritePasswordSafeKey (u8 * data)
+uint8_t WritePasswordSafeKey (uint8_t* data)
 {
     // memcpy ((void*)(FLASHC_USER_PAGE + 178),data,32);
 
@@ -467,7 +467,7 @@ unsigned char page_buffer[FLASH_PAGE_SIZE];
 
 *******************************************************************************/
 
-u8 ReadPasswordSafeKey (u8 * data)
+uint8_t ReadPasswordSafeKey (uint8_t* data)
 {
     memcpy (data, (void *) (FLASHC_USER_PAGE + 178), 32);
     return (TRUE);
@@ -488,7 +488,7 @@ u8 ReadPasswordSafeKey (u8 * data)
 
 *******************************************************************************/
 
-u8 WriteUpdatePinHashToFlash (u8 * PIN_Hash_pu8)
+uint8_t WriteUpdatePinHashToFlash (uint8_t* PIN_Hash_pu8)
 {
     unsigned char page_buffer[FLASH_PAGE_SIZE];
 
@@ -517,7 +517,7 @@ u8 WriteUpdatePinHashToFlash (u8 * PIN_Hash_pu8)
 
 *******************************************************************************/
 
-u8 ReadUpdatePinHashFromFlash (u8 * PIN_Hash_pu8)
+uint8_t ReadUpdatePinHashFromFlash (uint8_t* PIN_Hash_pu8)
 {
     memcpy (PIN_Hash_pu8, (void *) (FLASHC_USER_PAGE + 210), 32);
     return (TRUE);
@@ -538,7 +538,7 @@ u8 ReadUpdatePinHashFromFlash (u8 * PIN_Hash_pu8)
 
 *******************************************************************************/
 
-u8 WriteUpdatePinSaltToFlash (u8 * PIN_pu8)
+uint8_t WriteUpdatePinSaltToFlash (uint8_t* PIN_pu8)
 {
     unsigned char page_buffer[FLASH_PAGE_SIZE];
 
@@ -567,7 +567,7 @@ u8 WriteUpdatePinSaltToFlash (u8 * PIN_pu8)
 
 *******************************************************************************/
 
-u8 ReadUpdatePinSaltFromFlash (u8 * PIN_pu8)
+uint8_t ReadUpdatePinSaltFromFlash (uint8_t* PIN_pu8)
 {
     memcpy (PIN_pu8, (void *) (FLASHC_USER_PAGE + 242), 10);
     return (TRUE);
@@ -588,13 +588,13 @@ u8 ReadUpdatePinSaltFromFlash (u8 * PIN_pu8)
 
 *******************************************************************************/
 
-u8 CheckUpdatePin (u8 * Password_pu8)
+uint8_t CheckUpdatePin (uint8_t* Password_pu8)
 {
-    u8 i;
-    u8 UpdateSaltInit;
-    u8 output_au8[64];
-    u8 UpdatePinSalt_u8[UPDATE_PIN_SALT_SIZE];
-    u8 UpdatePinHash_u8[AES_KEYSIZE_256_BIT];
+    uint8_t i;
+    uint8_t UpdateSaltInit;
+    uint8_t output_au8[64];
+    uint8_t UpdatePinSalt_u8[UPDATE_PIN_SALT_SIZE];
+    uint8_t UpdatePinHash_u8[AES_KEYSIZE_256_BIT];
 
     ReadUpdatePinSaltFromFlash (UpdatePinSalt_u8);
 
@@ -642,9 +642,9 @@ u8 CheckUpdatePin (u8 * Password_pu8)
 
 *******************************************************************************/
 
-u8 InitializeUpdatePinHashInFlash ()
+uint8_t InitializeUpdatePinHashInFlash ()
 {
-        u8 input_au8[UPDATE_PIN_MAX_SIZE];
+        uint8_t input_au8[UPDATE_PIN_MAX_SIZE];
         memset(input_au8, 0, UPDATE_PIN_MAX_SIZE);
 
         // Initialize Update Pin with default value
@@ -668,14 +668,14 @@ u8 InitializeUpdatePinHashInFlash ()
 
 *******************************************************************************/
 
-u8 StoreNewUpdatePinHashInFlash (u8 * Password_pu8)
+uint8_t StoreNewUpdatePinHashInFlash (uint8_t * Password_pu8)
 {
-    u8 output_au8[64];
-    u8 UpdatePinSalt_u8[UPDATE_PIN_SALT_SIZE];
-    const u8 MIN_PASSWORD_LEN = 8;
+    uint8_t output_au8[64];
+    uint8_t UpdatePinSalt_u8[UPDATE_PIN_SALT_SIZE];
+    const uint8_t MIN_PASSWORD_LEN = 8;
 
     // Count trailing zeroes to check if password is >= 8 characters
-   for (u8 i = UPDATE_PIN_MAX_SIZE -1 ; i >= 0; i--) {
+   for (uint8_t i = UPDATE_PIN_MAX_SIZE -1 ; i >= 0; i--) {
         if (i < MIN_PASSWORD_LEN - 1) {
             return (FALSE);
         }
@@ -710,10 +710,10 @@ u8 StoreNewUpdatePinHashInFlash (u8 * Password_pu8)
 
 *******************************************************************************/
 
-u8 WriteBootloaderFlagToFlash (void)
+uint8_t WriteBootloaderFlagToFlash (void)
 {
     unsigned char page_buffer[FLASH_PAGE_SIZE];
-    const u32 BOOTLOADER_TOKEN = 0x424F4F54; // "BOOT" in Hex
+    const uint32_t BOOTLOADER_TOKEN = 0x424F4F54; // "BOOT" in Hex
 
     memcpy (page_buffer, (const void *) FLASHC_USER_PAGE, FLASH_PAGE_SIZE);
     memcpy (page_buffer + 252, (u8*) &BOOTLOADER_TOKEN, 4);
@@ -737,10 +737,10 @@ u8 WriteBootloaderFlagToFlash (void)
 
 *******************************************************************************/
 
-u8 EraseBootloaderFlagFromFlash (void)
+uint8_t EraseBootloaderFlagFromFlash (void)
 {
     unsigned char page_buffer[FLASH_PAGE_SIZE];
-    const u32 EMPTY_TOKEN = 0xFFFFFFFF;
+    const uint32_t EMPTY_TOKEN = 0xFFFFFFFF;
 
     memcpy (page_buffer, (const void *) FLASHC_USER_PAGE, FLASH_PAGE_SIZE);
     memcpy (page_buffer + 252, (u8*) &EMPTY_TOKEN, 4);
@@ -771,13 +771,13 @@ __attribute__ ((__aligned__ (4)))
 #elif (defined __ICCAVR32__)
 #pragma data_alignment = 4
 #endif
-u8 EraseStoreData_au8[256];
+uint8_t EraseStoreData_au8[256];
 
-u32 EraseLocalFlashKeyValues_u32 (void)
+uint32_t EraseLocalFlashKeyValues_u32 (void)
 {
-u32 i;
+uint32_t i;
 
-u32 i1;
+uint32_t i1;
 
 uint8_t page_buffer[FLASH_PAGE_SIZE];
 

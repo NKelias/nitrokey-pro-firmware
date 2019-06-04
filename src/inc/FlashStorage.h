@@ -28,15 +28,15 @@
 
 #include "stm32f10x.h"
 
-u8 WriteAESStorageKeyToUserPage (u8 * data);
+uint8_t WriteAESStorageKeyToUserPage (uint8_t * data);
 
-u8 WriteStickConfigurationToUserPage (void);
+uint8_t WriteStickConfigurationToUserPage (void);
 
-u8 ReadStickConfigurationFromUserPage (void);
+uint8_t ReadStickConfigurationFromUserPage (void);
 
-u8 InitStickConfigurationToUserPage_u8 (void);
+uint8_t InitStickConfigurationToUserPage_u8 (void);
 
-u32 EraseLocalFlashKeyValues_u32 (void);
+uint32_t EraseLocalFlashKeyValues_u32 (void);
 
 /***************************************************************************************
 
@@ -62,55 +62,55 @@ typedef struct
 {
     u16 MagicNumber_StickConfig_u16;    // Shows that the structure is valid
     // 2 byte // 2
-    u8 ReadWriteFlagUncryptedVolume_u8; // Flag stores the read/write flag in
+    uint8_t ReadWriteFlagUncryptedVolume_u8; // Flag stores the read/write flag in
     // the CPU flash 1 byte // 3
-    u8 ReadWriteFlagCryptedVolume_u8;   // Flag stores the read/write flag in
+    uint8_t ReadWriteFlagCryptedVolume_u8;   // Flag stores the read/write flag in
     // the CPU flash 1 byte // 4
-    u8 VersionInfo_au8[4];      // 4 byte // 8
-    u8 ReadWriteFlagHiddenVolume_u8;    // Flag stores the read/write flag in
+    uint8_t VersionInfo_au8[4];      // 4 byte // 8
+    uint8_t ReadWriteFlagHiddenVolume_u8;    // Flag stores the read/write flag in
     // the CPU flash 1 byte // 9
-    u8 FirmwareLocked_u8;       // 1 byte // 10
-    u8 NewSDCardFound_u8;       // Bit 0 new card found, bit 1-7 change counter 1
+    uint8_t FirmwareLocked_u8;       // 1 byte // 10
+    uint8_t NewSDCardFound_u8;       // Bit 0 new card found, bit 1-7 change counter 1
     // byte // 11
-    u8 SDFillWithRandomChars_u8;    // Bit 0 = 1 = filled, bit 1-7 change
+    uint8_t SDFillWithRandomChars_u8;    // Bit 0 = 1 = filled, bit 1-7 change
     // counter 1 byte // 12
-    u32 ActiveSD_CardID_u32;    // 4 byte // 16
-    u8 VolumeActiceFlag_u8;     // 1 byte // 17
-    u8 NewSmartCardFound_u8;    // Bit 0 new card found, bit 1-7 change
+    uint32_t ActiveSD_CardID_u32;    // 4 byte // 16
+    uint8_t VolumeActiceFlag_u8;     // 1 byte // 17
+    uint8_t NewSmartCardFound_u8;    // Bit 0 new card found, bit 1-7 change
     // counter 1 byte
-    u8 UserPwRetryCount;        // User password retry count 1 byte // 19
-    u8 AdminPwRetryCount;       // Admin password retry count 1 byte // 20 Byte
+    uint8_t UserPwRetryCount;        // User password retry count 1 byte // 19
+    uint8_t AdminPwRetryCount;       // Admin password retry count 1 byte // 20 Byte
     // not packed
-    u32 ActiveSmartCardID_u32;  // 4 byte
-    u8 StickKeysNotInitiated_u8;    // No AES keys computed (1 = AES are
+    uint32_t ActiveSmartCardID_u32;  // 4 byte
+    uint8_t StickKeysNotInitiated_u8;    // No AES keys computed (1 = AES are
     // builded) 1 byte // 25 Byte not packed
 } typeStick20Configuration_st;  // Sum 25 byte (Max 25 Byte) // not packed
 
 
 extern typeStick20Configuration_st StickConfiguration_st;
 
-u8 WriteXorPatternToFlash (u8 * XorPattern_pu8);
-u8 ReadXorPatternFromFlash (u8 * XorPattern_pu8);
+uint8_t WriteXorPatternToFlash (uint8_t * XorPattern_pu8);
+uint8_t ReadXorPatternFromFlash (uint8_t * XorPattern_pu8);
 
-u8 WritePasswordSafeKey (u8 * data);
+uint8_t WritePasswordSafeKey (uint8_t * data);
 
-u8 ReadPasswordSafeKey (u8 * data);
-u8 ReadAESStorageKeyToUserPage (u8 * data);
+uint8_t ReadPasswordSafeKey (uint8_t * data);
+uint8_t ReadAESStorageKeyToUserPage (uint8_t * data);
 
-u8 WriteUpdatePinHashToFlash (u8 * PIN_Hash_pu8);
-u8 ReadUpdatePinHashFromFlash (u8 * PIN_Hash_pu8);
-u8 WriteUpdatePinSaltToFlash (u8 * PIN_pu8);
-u8 ReadUpdatePinSaltFromFlash (u8 * PIN_pu8);
+uint8_t WriteUpdatePinHashToFlash (uint8_t * PIN_Hash_pu8);
+uint8_t ReadUpdatePinHashFromFlash (uint8_t * PIN_Hash_pu8);
+uint8_t WriteUpdatePinSaltToFlash (uint8_t * PIN_pu8);
+uint8_t ReadUpdatePinSaltFromFlash (uint8_t * PIN_pu8);
 
-u8 CheckUpdatePin (u8 * Password_pu8);
-u8 InitializeUpdatePinHashInFlash (void);
-u8 StoreNewUpdatePinHashInFlash (u8 * Password_pu8);
+uint8_t CheckUpdatePin (uint8_t * Password_pu8);
+uint8_t InitializeUpdatePinHashInFlash (void);
+uint8_t StoreNewUpdatePinHashInFlash (uint8_t * Password_pu8);
 
-u8 WriteBootloaderFlagToFlash (void);
-u8 EraseBootloaderFlagFromFlash (void);
+uint8_t WriteBootloaderFlagToFlash (void);
+uint8_t EraseBootloaderFlagFromFlash (void);
 
 
-u8 ClearStickKeysNotInitatedToFlash (void);
-u8 SetStickKeysNotInitatedToFlash (void);
+uint8_t ClearStickKeysNotInitatedToFlash (void);
+uint8_t SetStickKeysNotInitatedToFlash (void);
 
 #endif /* FLASHSTORAGE_H_ */
