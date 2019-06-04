@@ -596,11 +596,20 @@ u8 CheckUpdatePin (u8 * Password_pu8, u32 PasswordLen_u32)
     u8 UpdatePinSalt_u8[UPDATE_PIN_SALT_SIZE];
     u8 UpdatePinHash_u8[AES_KEYSIZE_256_BIT];
 
+    const u8 PASSWORD_LEN = 20;
+    const u8 MIN_PASSWORD_LEN = 8;
+
     ReadUpdatePinSaltFromFlash (UpdatePinSalt_u8);
 
-    /* TODO: Return false if PW is <8 Bytes (count trailing zeroes from right)*/
-
-    /* TODO: Run check on 20 Bytes always*/
+    // Count trailing zeroes to check if password is >= 8 characters
+    for (u8 i = PASSWORD_LEN -1 ; i >= 0; i--) {
+        if (i < MIN_PASSWORD_LEN) {
+            return (FALSE);
+        }
+        if (Password_pu8[i] != 0) {
+            break;
+        } 
+    }
 
     // Check if PIN is uninitialized after flashing
     UpdateSaltInit = FALSE;
@@ -611,6 +620,7 @@ u8 CheckUpdatePin (u8 * Password_pu8, u32 PasswordLen_u32)
         UpdateSaltInit = TRUE;
       }
     }
+
     if (FALSE == UpdateSaltInit)
     {
         // Initialize Update Pin with default value
@@ -623,7 +633,7 @@ u8 CheckUpdatePin (u8 * Password_pu8, u32 PasswordLen_u32)
         return (FALSE);
     }
 
-    pbkdf2 (output_au8, Password_pu8, PasswordLen_u32, UpdatePinSalt_u8, UPDATE_PIN_SALT_SIZE);
+    pbkdf2 (output_au8, Password_pu8, PASSWORD_LEN, UpdatePinSalt_u8, UPDATE_PIN_SALT_SIZE);
     ReadUpdatePinHashFromFlash (UpdatePinHash_u8);
 
     if (0 != memcmp (UpdatePinHash_u8, output_au8, AES_KEYSIZE_256_BIT))
