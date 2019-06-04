@@ -42,3 +42,12 @@ int8_t i = 0;
 
     return result;
 }
+
+void memset_safe(void *const pnt, unsigned char val, const u32 len)
+{
+    volatile unsigned char *volatile pnt_ = (volatile unsigned char *volatile) pnt;
+    u32 i = (u32) 0U;
+    while (i < len){
+        pnt_[i++] = val;
+    }
+}

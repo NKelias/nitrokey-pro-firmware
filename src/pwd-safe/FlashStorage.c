@@ -33,6 +33,7 @@
 #include "hotp.h"
 #include "CcidLocalAccess.h"
 #include "pbkdf2.h"
+#include "memory_ops.h"
 
 typeStick20Configuration_st StickConfiguration_st;
 
@@ -592,7 +593,9 @@ uint8_t CheckUpdatePin (uint8_t* Password_pu8)
         return (FALSE);
     }
 
-    /* TODO: Clear PBKDF output*/
+    // Erase Hash from buffer
+    memset_safe(output_au8, 0, UPDATE_PIN_SALT_SIZE);
+
     DelayMs (100);
     return (TRUE);
 }
@@ -661,6 +664,8 @@ uint8_t StoreNewUpdatePinHashInFlash (uint8_t * Password_pu8)
 
     pbkdf2 (output_au8, Password_pu8, UPDATE_PIN_MAX_SIZE, UpdatePinSalt_u8, UPDATE_PIN_SALT_SIZE);
     WriteUpdatePinHashToFlash (output_au8);
+
+    memset_safe(output_au8, 0, UPDATE_PIN_SALT_SIZE);
 
     return (TRUE);
 }
