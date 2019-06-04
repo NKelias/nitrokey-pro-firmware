@@ -89,6 +89,8 @@ typedef struct
 
 extern typeStick20Configuration_st StickConfiguration_st;
 
+uint8_t WriteToUserPage(uint8_t * data, uint32_t length, uint32_t offset);
+
 uint8_t WriteXorPatternToFlash (uint8_t * XorPattern_pu8);
 uint8_t ReadXorPatternFromFlash (uint8_t * XorPattern_pu8);
 
