@@ -53,19 +53,30 @@ unsigned int debug_len = 0;
 
    Byte 
    0 - 31     AES Storage key 
-   32 - 51    Matrix columns for user password 
-   52 - 71    Matrix columns for admin password 
+   32 - 51    (unused) Matrix columns for user password 
+   52 - 71    (unused) Matrix columns for admin password 
    72 - 101   Stick Configuration 
-   102 - 133  Base for AES key hidden volume (32 byte) 
-   134 - 137  ID of sd card (4 byte) 
-   138 - 141  Last stored real timestamp (4 byte)
-   142 - 145  ID of sc card (4 byte) 
+   102 - 133  (unused) Base for AES key hidden volume (32 byte) 
+   134 - 137  (unused) ID of sd card (4 byte) 
+   138 - 141  (unused) Last stored real timestamp (4 byte)
+   142 - 145  (unused) ID of sc card (4 byte) 
    146 - 177  XOR mask for sc tranfered keys (32 byte) 
    178 - 209  Password safe key (32 byte) 
    210 - 242  PBKDF2 Firmware Update password hash (32 byte)
    242 - 251  Firmware Update password Hash salt (10 byte)
    252 - 255  Bootloader boot flag
-   256 -      Debug */
+   256 -      (unused) Debug */
+
+enum user_page_offsets {
+    AES_STORAGE_KEY_OFFSET      = 0,
+    STICK_CONFIGURATION_OFFSET  = 72,
+    XOR_MASK_OFFSET             = 146,
+    PWS_KEY_OFFSET              = 178,
+    FW_PASSWORD_HASH_OFFSET     = 210,
+    FW_SALT_OFFSET              = 242,
+    FW_BOOTLOADER_FLAG_OFFSET   = 252,
+    DEBUG_OFFSET                = 256
+};
 
 #ifdef ADD_DEBUG_COMMANDS
 
@@ -74,7 +85,7 @@ void WriteDebug (uint8_t * data, unsigned int length)
     unsigned char page_buffer[FLASH_PAGE_SIZE];
 
     memcpy (page_buffer, FLASHC_USER_PAGE, FLASH_PAGE_SIZE);
-    memcpy (page_buffer + 252, data, length);
+    memcpy (page_buffer + DEBUG_OFFSET, data, length);
 
     debug_len += length;
 
@@ -90,7 +101,7 @@ void GetDebug (uint8_t * data, unsigned int* length)
     unsigned char page_buffer[FLASH_PAGE_SIZE];
 
     memcpy (page_buffer, FLASHC_USER_PAGE, FLASH_PAGE_SIZE);
-    memcpy (data, page_buffer + 252, debug_len);
+    memcpy (data, page_buffer + DEBUG_OFFSET, debug_len);
     *length = debug_len;
     debug_len = 0;
 }
@@ -133,7 +144,7 @@ uint8_t WriteToUserPage(uint8_t * data, uint32_t length, uint32_t offset)
 
 uint8_t WriteAESStorageKeyToUserPage (uint8_t * data)
 {
-    return WriteToUserPage (data, 32, 0);
+    return WriteToUserPage (data, 32, AES_STORAGE_KEY_OFFSET);
 }
 
 /*******************************************************************************
@@ -381,7 +392,7 @@ uint8_tClearStickKeysNotInitatedToFlash (void)
 
 uint8_t WriteXorPatternToFlash (uint8_t* XorPattern_pu8)
 {
-    return WriteToUserPage (XorPattern_pu8, 32, 146);
+    return WriteToUserPage (XorPattern_pu8, 32, XOR_MASK_OFFSET);
 }
 
 /*******************************************************************************
@@ -399,7 +410,7 @@ uint8_t WriteXorPatternToFlash (uint8_t* XorPattern_pu8)
 
 uint8_t ReadXorPatternFromFlash (uint8_t* XorPattern_pu8)
 {
-    memcpy (XorPattern_pu8, (void *) (FLASHC_USER_PAGE + 146), 32);
+    memcpy (XorPattern_pu8, (void *) (FLASHC_USER_PAGE + XOR_MASK_OFFSET), 32);
 
     return (TRUE);
 }
@@ -425,7 +436,7 @@ uint8_t ReadXorPatternFromFlash (uint8_t* XorPattern_pu8)
 
 uint8_t WritePasswordSafeKey (uint8_t* data)
 {
-    return WriteToUserPage (data, 32, 178);
+    return WriteToUserPage (data, 32, PWS_KEY_OFFSET);
 }
 
 /*******************************************************************************
@@ -446,7 +457,7 @@ uint8_t WritePasswordSafeKey (uint8_t* data)
 
 uint8_t ReadPasswordSafeKey (uint8_t* data)
 {
-    memcpy (data, (void *) (FLASHC_USER_PAGE + 178), 32);
+    memcpy (data, (void *) (FLASHC_USER_PAGE + PWS_KEY_OFFSET), 32);
     return (TRUE);
 }
 
@@ -467,7 +478,7 @@ uint8_t ReadPasswordSafeKey (uint8_t* data)
 
 uint8_t WriteUpdatePinHashToFlash (uint8_t* PIN_Hash_pu8)
 {
-    return WriteToUserPage (PIN_Hash_pu8, 32, 210);
+    return WriteToUserPage (PIN_Hash_pu8, 32, FW_PASSWORD_HASH_OFFSET);
 }
 
 /*******************************************************************************
@@ -487,7 +498,7 @@ uint8_t WriteUpdatePinHashToFlash (uint8_t* PIN_Hash_pu8)
 
 uint8_t ReadUpdatePinHashFromFlash (uint8_t* PIN_Hash_pu8)
 {
-    memcpy (PIN_Hash_pu8, (void *) (FLASHC_USER_PAGE + 210), 32);
+    memcpy (PIN_Hash_pu8, (void *) (FLASHC_USER_PAGE + FW_PASSWORD_HASH_OFFSET), 32);
     return (TRUE);
 }
 
@@ -508,7 +519,7 @@ uint8_t ReadUpdatePinHashFromFlash (uint8_t* PIN_Hash_pu8)
 
 uint8_t WriteUpdatePinSaltToFlash (uint8_t* PIN_pu8)
 {
-    return WriteToUserPage (PIN_pu8, 10, 242);
+    return WriteToUserPage (PIN_pu8, 10, FW_SALT_OFFSET);
 }
 
 /*******************************************************************************
@@ -528,7 +539,7 @@ uint8_t WriteUpdatePinSaltToFlash (uint8_t* PIN_pu8)
 
 uint8_t ReadUpdatePinSaltFromFlash (uint8_t* PIN_pu8)
 {
-    memcpy (PIN_pu8, (void *) (FLASHC_USER_PAGE + 242), 10);
+    memcpy (PIN_pu8, (void *) (FLASHC_USER_PAGE + FW_SALT_OFFSET), 10);
     return (TRUE);
 }
 
@@ -673,7 +684,7 @@ uint8_t WriteBootloaderFlagToFlash (void)
 {
     const uint32_t BOOTLOADER_TOKEN = 0x424F4F54; // "BOOT" in Hex
 
-    return WriteToUserPage ((uint8_t *) BOOTLOADER_TOKEN, sizeof(uint32_t), 252);
+    return WriteToUserPage ((uint8_t *) BOOTLOADER_TOKEN, sizeof(uint32_t), FW_BOOTLOADER_FLAG_OFFSET);
 }
 
 /*******************************************************************************
@@ -692,7 +703,7 @@ uint8_t EraseBootloaderFlagFromFlash (void)
 {
     const uint32_t EMPTY_TOKEN = 0xFFFFFFFF; // "BOOT" in Hex
 
-    return WriteToUserPage ((uint8_t *) EMPTY_TOKEN, sizeof(uint32_t), 252);
+    return WriteToUserPage ((uint8_t *) EMPTY_TOKEN, sizeof(uint32_t), FW_BOOTLOADER_FLAG_OFFSET);
 }
 
 /*******************************************************************************
