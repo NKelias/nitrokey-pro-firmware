@@ -145,7 +145,7 @@ uint8_t WriteToUserPage(uint8_t * data, uint32_t length, uint32_t offset)
 
 uint8_t WriteAESStorageKeyToUserPage (uint8_t * data)
 {
-    return WriteToUserPage (data, 32, AES_STORAGE_KEY_OFFSET);
+    return WriteToUserPage (data, AES_KEYSIZE_256_BIT, AES_STORAGE_KEY_OFFSET);
 }
 
 /*******************************************************************************
@@ -160,7 +160,7 @@ uint8_t WriteAESStorageKeyToUserPage (uint8_t * data)
 
 uint8_t ReadAESStorageKeyToUserPage (uint8_t * data)
 {
-    memcpy (data, (void *) (FLASHC_USER_PAGE), 32);
+    memcpy (data, (void *) (FLASHC_USER_PAGE), AES_KEYSIZE_256_BIT);
     return (TRUE);
 }
 
@@ -520,7 +520,7 @@ uint8_t ReadUpdatePinHashFromFlash (uint8_t* PIN_Hash_pu8)
 
 uint8_t WriteUpdatePinSaltToFlash (uint8_t* PIN_pu8)
 {
-    return WriteToUserPage (PIN_pu8, 10, FW_SALT_OFFSET);
+    return WriteToUserPage (PIN_pu8, UPDATE_PIN_SALT_SIZE, FW_SALT_OFFSET);
 }
 
 /*******************************************************************************
@@ -540,7 +540,7 @@ uint8_t WriteUpdatePinSaltToFlash (uint8_t* PIN_pu8)
 
 uint8_t ReadUpdatePinSaltFromFlash (uint8_t* PIN_pu8)
 {
-    memcpy (PIN_pu8, (void *) (FLASHC_USER_PAGE + FW_SALT_OFFSET), 10);
+    memcpy (PIN_pu8, (void *) (FLASHC_USER_PAGE + FW_SALT_OFFSET), UPDATE_PIN_SALT_SIZE);
     return (TRUE);
 }
 
